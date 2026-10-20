@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.cadastrocontatos.ContatoViewModel
 import com.example.cadastrocontatos.data.Contato
+import androidx.compose.material3.OutlinedButton
 
 @Composable
 fun ContatoScreen(
@@ -34,6 +35,9 @@ fun ContatoScreen(
     var nome by remember { mutableStateOf("") }
     var telefone by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var cep by remember { mutableStateOf("") }
+    val endereco by viewModel.endereco.collectAsState()
+    val erroCep by viewModel.erroCep.collectAsState()
 
     Column(
         modifier = Modifier
@@ -70,6 +74,30 @@ fun ContatoScreen(
         )
 
         Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = cep,
+            onValueChange = { cep = it.filter(Char::isDigit).take(8) },
+            label = { Text("CEP") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedButton(
+            onClick = { viewModel.consultarCep(cep) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Consultar CEP")
+        }
+
+        erroCep?.let {
+            Text(text = it)
+        }
+
+        endereco?.let {
+            Text(text = "Logradouro: ${it.street}")
+            Text(text = "Bairro: ${it.neighborhood}")
+            Text(text = "Cidade: ${it.city} - ${it.state}")
+        }
 
         Button(
             onClick = {
